@@ -5,138 +5,293 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>AI Complaint Resolver — Demo</title>
   <style>
-    :root{--bg:#f6f8fb;--card:#fff;--muted:#6b7280;--accent:#0f62fe}
-    body{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background:var(--bg); margin:0; padding:32px}
-    .container{max-width:980px;margin:0 auto}
-    header{display:flex;align-items:center;gap:16px;margin-bottom:18px}
-    h1{margin:0;font-size:20px}
-    .grid{display:grid;grid-template-columns:1fr 360px;gap:18px}
-    .card{background:var(--card);border-radius:12px;padding:16px;box-shadow:0 6px 18px rgba(15,23,42,0.06)}
-    label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
-    input[type=text],input[type=email],select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #e6e9ef;font-size:14px}
-    textarea{min-height:120px}
-    .row{display:flex;gap:12px}
-    .btn{background:var(--accent);color:#fff;padding:10px 14px;border-radius:8px;border:0;cursor:pointer}
-    .btn.ghost{background:transparent;color:var(--accent);border:1px solid #dbe6ff}
-    .small{font-size:13px;color:var(--muted)}
-    .authority{font-weight:600;margin-top:6px}
-    .preview{white-space:pre-wrap;background:#f3f6ff;border-radius:8px;padding:12px;border:1px dashed #d7e3ff}
-    table{width:100%;border-collapse:collapse}
-    th,td{padding:8px;border-bottom:1px solid #f1f3f6;text-align:left}
-    .status-pill{display:inline-block;padding:6px 9px;border-radius:999px;font-size:13px}
-    .s-open{background:#fff4e6;color:#8a4b00;border:1px solid #ffecb5}
-    .s-inprog{background:#eef7ff;color:#054a91;border:1px solid #cfe4ff}
-    .s-closed{background:#eefbe7;color:#075c14;border:1px solid #bfe7c9}
-    .controls{display:flex;gap:8px;align-items:center}
-    .muted{color:var(--muted)}
+    :root{--accent:#0f62fe;--bg:url('background.jpg');}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;color:#222}
+    body{background-color:#f5f7fb;display:grid;place-items:center;padding:20px}
+    .app{width:100%;max-width:1000px;background:white;border-radius:12px;box-shadow:0 10px 30px rgba(12,20,40,0.08);overflow:hidden;display:grid;grid-template-columns:1fr 420px}
+    .left{padding:28px}
+    h1{margin:0 0 6px;font-size:20px}
+    p.lead{margin:0 0 18px;color:#475569}
+    form .row{display:flex;gap:10px}
+    label{display:block;font-size:12px;color:#334155;margin-bottom:8px}
+    input,select,textarea{width:100%;padding:10px;border:1px solid #e6eef8;border-radius:8px;background:#fcfeff;box-sizing:border-box}
+    textarea{min-height:110px;resize:vertical}
+    .controls{display:flex;gap:8px;margin-top:12px}
+    button{background:var(--accent);color:white;border:0;padding:10px 12px;border-radius:10px;cursor:pointer}
+    button.secondary{background:#eef2ff;color:#0f62fe}
+    .right{background:linear-gradient(180deg,#fbfdff, #f6fbff);padding:18px;border-left:1px solid #f1f5f9}
+    .preview{background:#fff;border:1px dashed #e6eef8;padding:12px;border-radius:8px;min-height:120px}
+    .list{margin-top:12px}
+    .complaint-card{border:1px solid #eef2ff;padding:10px;border-radius:8px;margin-bottom:10px;background:white}
+    .meta{font-size:12px;color:#475569}
+    .status{display:inline-block;padding:4px 8px;border-radius:999px;font-size:12px}
+    .status.submitted{background:#eef2ff;color:#0f62fe}
+    .status.inprogress{background:#fff4e6;color:#b45309}
+    .status.resolved{background:#ecfdf5;color:#027a48}
+    .upload-preview{height:88px;width:100%;object-fit:cover;border-radius:8px;margin-top:8px;border:1px solid #e6eef8}
+    footer{font-size:12px;color:#64748b;margin-top:12px}
+    .small{font-size:12px;color:#64748b}
+    /* responsive */
+    @media (max-width:920px){.app{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='40'><rect rx='8' width='40' height='40' fill='%230f62fe'/><text x='50%' y='55%' fill='white' font-size='18' font-family='Arial' text-anchor='middle' alignment-baseline='middle'>AI</text></svg>" alt="logo">
-      <div>
-        <h1>AI Complaint Resolver — HTML Demo</h1>
-        <div class="small muted">Enter a complaint in plain language, generate a professional message, send to the right authority and track status.</div>
-      </div>
-    </header>
+  <div class="app" role="application">
+    <div class="left">
+      <h1>AI Complaint Resolver — Demo</h1>
+      <p class="lead">Enter a brief complaint in plain text. The app will format it professionally, pick the likely authority, and create a trackable ticket.</p>
 
-    <div class="grid">
-      <div>
-        <form id="complaintForm" class="card">
+      <form id="complaintForm" autocomplete="off">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
           <div>
-            <label for="name">Full name</label>
-            <input id="name" required type="text" placeholder="Your full name">
+            <label for="name">Your name</label>
+            <input id="name" placeholder="e.g. Ravi Kumar" />
           </div>
-
-          <div style="margin-top:12px">
-            <label for="email">Email / Contact</label>
-            <input id="email" required type="text" placeholder="email@example.com or +91-98765...">
+          <div>
+            <label for="contact">Contact (phone/email)</label>
+            <input id="contact" placeholder="e.g. +91 98xxxx or ravi@example.com" />
           </div>
+        </div>
 
-          <div style="margin-top:12px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
+          <div>
             <label for="type">Complaint type</label>
             <select id="type">
-              <option value="electricity">Electricity / Power</option>
-              <option value="internet">Internet / Broadband</option>
-              <option value="water">Water / Sewage</option>
-              <option value="public_safety">Public safety / Roads / Streetlights</option>
-              <option value="municipal">Municipal / Civic services</option>
-              <option value="other">Other</option>
+              <option>Electricity</option>
+              <option>Internet</option>
+              <option>Water</option>
+              <option>Road/Public Infrastructure</option>
+              <option>Garbage / Sanitation</option>
+              <option>Other</option>
             </select>
           </div>
-
-          <div style="margin-top:12px">
+          <div>
             <label for="location">Location (address / landmark)</label>
-            <input id="location" type="text" placeholder="Flat / Street / City / Pincode">
+            <input id="location" placeholder="e.g. 12B, MG Road, Chennai" />
           </div>
-
-          <div style="margin-top:12px">
-            <label for="plain">Write your complaint (plain text)</label>
-            <textarea id="plain" placeholder="E.g. Power outage on Block A, transformer noise, repeated every evening..." required></textarea>
-            <div class="small muted" style="margin-top:6px">Tip: Be specific — dates, times, and any reference numbers help.</div>
-          </div>
-
-          <div style="display:flex;gap:8px;margin-top:12px;align-items:center">
-            <button type="button" id="generateBtn" class="btn">Generate professional message</button>
-            <button type="button" id="autoMapBtn" class="btn ghost">Auto-select authority</button>
-            <div style="flex:1"/>
-            <button type="submit" class="btn">Send complaint</button>
-          </div>
-
-        </form>
-
-        <div class="card" style="margin-top:12px">
-          <div class="small muted">Selected authority</div>
-          <div id="authorityName" class="authority">—</div>
-          <div id="authorityInfo" class="small muted" style="margin-top:6px">No selection yet</div>
         </div>
 
-        <div class="card" style="margin-top:12px">
-          <div class="small muted">Generated professional message</div>
-          <div id="messagePreview" class="preview">No message yet. Click "Generate professional message" to create a formatted, polite complaint ready to send.</div>
+        <div style="margin-top:10px">
+          <label for="raw">Describe your complaint (plain text)</label>
+          <textarea id="raw" placeholder="Type your complaint in plain language. e.g. 'Power outage since last night near transformer, sparking noticed.'"></textarea>
         </div>
 
+        <div style="margin-top:10px">
+          <label for="photo">Photo (optional)</label>
+          <input id="photo" type="file" accept="image/*" />
+          <img id="photoPreview" class="upload-preview" alt="Preview" style="display:none" />
+        </div>
+
+        <div class="controls">
+          <button type="button" id="formatBtn">Format Complaint</button>
+          <button type="button" class="secondary" id="detectBtn">Suggest Authority</button>
+          <button type="button" id="sendBtn">Send to Authority</button>
+          <button type="button" class="secondary" id="saveLocalBtn">Save Locally</button>
+        </div>
+      </form>
+
+      <div style="margin-top:14px">
+        <label>Formatted complaint</label>
+        <div id="formatted" class="preview">(formatted message will appear here)</div>
+        <div style="margin-top:8px;display:flex;gap:8px">
+          <button id="copyBtn">Copy</button>
+          <button id="downloadBtn" class="secondary">Download as .txt</button>
+        </div>
       </div>
 
-      <aside>
-        <div class="card">
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <div>
-              <div class="small muted">Complaint dashboard</div>
-              <div style="font-weight:700">Tracked complaints</div>
-            </div>
-            <div class="controls"><button id="refreshBtn" class="btn ghost">Refresh</button></div>
-          </div>
-
-          <div style="margin-top:12px;max-height:420px;overflow:auto">
-            <table id="complaintTable">
-              <thead>
-                <tr><th>ID</th><th>Type</th><th>Authority</th><th>Status</th></tr>
-              </thead>
-              <tbody></tbody>
-            </table>
-          </div>
-
-          <div style="margin-top:12px" class="small muted">This demo stores complaints in your browser (localStorage) and simulates status updates. Integrate with a backend endpoint to send real emails/requests.</div>
-        </div>
-
-        <div class="card" style="margin-top:12px">
-          <div class="small muted">API integration notes</div>
-          <ol style="padding-left:18px;margin:8px 0">
-            <li>POST /api/complaints — JSON payload: {name,email,type,location,message}</li>
-            <li>GET /api/complaints/:id — returns current status and history</li>
-            <li>Webhook /notifications — authority updates status: open → in_progress → closed</li>
-          </ol>
-          <div class="small muted">The HTML below includes a placeholder fetch to demonstrate sending; replace with your server URL.</div>
-        </div>
-
-      </aside>
+      <footer>
+        <div class="small">Tip: replace the background.jpg file and the tools.jpg image files in the same folder to customize look and "real mechanics tools" photo.</div>
+      </footer>
     </div>
+
+    <aside class="right">
+      <h3 style="margin:0">Complaint Tracker</h3>
+      <p class="small">Saved complaints & statuses</p>
+
+      <div id="tickets" class="list"></div>
+
+      <hr />
+      <div style="margin-top:8px">
+        <label>Simulate status update</label>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <select id="ticketSelect"></select>
+          <select id="statusSelect">
+            <option value="Submitted">Submitted</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Resolved">Resolved</option>
+          </select>
+          <button id="updateStatusBtn">Update</button>
+        </div>
+      </div>
+
+      <div style="margin-top:14px">
+        <label>Authority selected</label>
+        <div id="authority" class="meta">(no authority suggested yet)</div>
+      </div>
+
+      <div style="margin-top:12px">
+        <label>Preview photo (tools / background)</label>
+        <img src="tools.jpg" alt="tools" style="width:100%;height:120px;object-fit:cover;border-radius:8px;margin-top:8px;border:1px solid #e6eef8" />
+      </div>
+    </aside>
   </div>
 
   <script>
-    // (JS from original code kept the same)
+    // Simple client-side demo engine
+    const el = id=>document.getElementById(id);
+    const raw = el('raw'), nameEl = el('name'), contactEl = el('contact'), typeEl = el('type'), locEl = el('location');
+    const formattedEl = el('formatted'), authorityEl = el('authority');
+    const photoInput = el('photo'), photoPreview = el('photoPreview');
+
+    function suggestAuthority(type, text){
+      // naive mapping — swap or expand with server ML later
+      const map = {
+        'Electricity':'Local Electricity Distribution Company (DISCOM) / Subdivision Office',
+        'Internet':'ISP Customer Support / Nodal Officer',
+        'Water':'Municipal Water Department',
+        'Road/Public Infrastructure':'Municipal Corporation / PWD',
+        'Garbage / Sanitation':'Municipal Sanitation Department',
+        'Other':'Local Municipal Office'
+      };
+      return map[type]||map['Other'];
+    }
+
+    function formatComplaint(){
+      const now = new Date();
+      const complaintText = raw.value.trim();
+      const lines = [];
+      lines.push(`Date: ${now.toLocaleString()}`);
+      if(nameEl.value.trim()) lines.push(`From: ${nameEl.value.trim()}`);
+      if(contactEl.value.trim()) lines.push(`Contact: ${contactEl.value.trim()}`);
+      if(locEl.value.trim()) lines.push(`Location: ${locEl.value.trim()}`);
+      lines.push(`Issue type: ${typeEl.value}`);
+      lines.push('---');
+
+      // polite, formal rewrite (basic rules)
+      let rewrite = complaintText;
+      // simple sanitization and capitalization heuristics
+      if(rewrite && rewrite.length>0){
+        rewrite = rewrite.charAt(0).toUpperCase()+rewrite.slice(1);
+        if(!/[.?!]$/.test(rewrite)) rewrite += '.';
+      } else rewrite = '(No additional details provided)';
+
+      lines.push('Description:');
+      lines.push(rewrite);
+      lines.push('\nRequested action: Please investigate this issue and provide an update.');
+      formattedEl.textContent = lines.join('\n');
+      return formattedEl.textContent;
+    }
+
+    el('formatBtn').addEventListener('click', ()=>{
+      formatComplaint();
+    });
+
+    el('detectBtn').addEventListener('click', ()=>{
+      const auth = suggestAuthority(typeEl.value, raw.value);
+      authorityEl.textContent = auth;
+      authorityEl.title = auth;
+    });
+
+    // photo preview
+    photoInput.addEventListener('change', (e)=>{
+      const f = e.target.files && e.target.files[0];
+      if(!f) { photoPreview.style.display='none'; return }
+      const url = URL.createObjectURL(f);
+      photoPreview.src = url;
+      photoPreview.style.display = 'block';
+    });
+
+    // simple ticketing using localStorage (demo only)
+    function loadTickets(){
+      const list = JSON.parse(localStorage.getItem('ai_tickets')||'[]');
+      const sel = el('ticketSelect'); sel.innerHTML='';
+      const container = el('tickets'); container.innerHTML = '';
+      list.forEach(t=>{
+        const div = document.createElement('div'); div.className='complaint-card';
+        div.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center"><strong>Ticket #${t.id}</strong><span class="status ${t.status.toLowerCase().replace(' ','')}">${t.status}</span></div><div class="meta">${t.type} • ${t.location || '—'}</div><pre style="white-space:pre-wrap;margin:8px 0">${t.formatted}</pre>`;
+        container.appendChild(div);
+        const opt = document.createElement('option'); opt.value = t.id; opt.textContent = `#${t.id} — ${t.type} — ${t.status}`; sel.appendChild(opt);
+      });
+    }
+
+    function saveTicket(payload){
+      const list = JSON.parse(localStorage.getItem('ai_tickets')||'[]');
+      list.unshift(payload);
+      localStorage.setItem('ai_tickets', JSON.stringify(list));
+      loadTickets();
+    }
+
+    el('saveLocalBtn').addEventListener('click', ()=>{
+      const formatted = formatComplaint();
+      const ticket = {
+        id: Date.now().toString().slice(-6),
+        createdAt: new Date().toISOString(),
+        name: nameEl.value.trim(),
+        contact: contactEl.value.trim(),
+        type: typeEl.value,
+        location: locEl.value.trim(),
+        formatted, status:'Submitted'
+      };
+      saveTicket(ticket);
+      alert('Saved locally. Use the tracker on the right to view status.');
+    });
+
+    el('sendBtn').addEventListener('click', async ()=>{
+      const formatted = formatComplaint();
+      // this is a placeholder for real backend API.
+      // replace URL with your server endpoint or Firebase function.
+      // We'll simulate success and then save ticket locally.
+      const ticket = {
+        id: Date.now().toString().slice(-6),
+        createdAt: new Date().toISOString(),
+        name: nameEl.value.trim(),
+        contact: contactEl.value.trim(),
+        type: typeEl.value,
+        location: locEl.value.trim(),
+        formatted, status:'Submitted'
+      };
+      // simulate network call
+      try{
+        // Example real call (uncomment & replace):
+        // const resp = await fetch('/api/send-complaint',{method:'POST',headers:{'Content-Type':'application/json'},body: JSON.stringify(ticket)});
+        // const data = await resp.json();
+        // ticket.id = data.ticketId || ticket.id;
+
+        saveTicket(ticket);
+        authorityEl.textContent = suggestAuthority(typeEl.value, raw.value);
+        alert('Complaint sent to authority (simulated). Ticket saved in local tracker.');
+      }catch(e){
+        alert('Failed to send. Saved locally instead.');
+        saveTicket(ticket);
+      }
+    });
+
+    el('copyBtn').addEventListener('click', ()=>{
+      navigator.clipboard.writeText(formattedEl.textContent||'').then(()=>alert('Copied to clipboard'))
+    });
+
+    el('downloadBtn').addEventListener('click', ()=>{
+      const blob = new Blob([formattedEl.textContent||''],{type:'text/plain'});
+      const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download = 'complaint.txt'; a.click();
+    });
+
+    el('updateStatusBtn').addEventListener('click', ()=>{
+      const id = el('ticketSelect').value; if(!id) return alert('Select a ticket');
+      const newStatus = el('statusSelect').value;
+      const list = JSON.parse(localStorage.getItem('ai_tickets')||'[]');
+      const found = list.find(x=>x.id==id);
+      if(found){ found.status = newStatus; localStorage.setItem('ai_tickets', JSON.stringify(list)); loadTickets(); alert('Status updated (local).'); }
+    });
+
+    el('ticketSelect').addEventListener('change', ()=>{
+      const id = el('ticketSelect').value; if(!id) return;
+      const list = JSON.parse(localStorage.getItem('ai_tickets')||'[]');
+      const found = list.find(x=>x.id==id);
+      if(found) authorityEl.textContent = suggestAuthority(found.type, found.formatted);
+    })
+
+    // load on start
+    loadTickets();
   </script>
 </body>
 </html>
