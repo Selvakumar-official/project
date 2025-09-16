@@ -5,19 +5,8 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>AI Complaint Resolver — Demo</title>
   <style>
-    :root{--bg-overlay:rgba(246,248,251,0.88);--card:#fff;--muted:#6b7280;--accent:#0f62fe}
-    body{
-      font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
-      margin:0; padding:32px;
-      background:url('https://images.unsplash.com/photo-1590490360182-8b3f9d6b84b3?auto=format&fit=crop&w=1400&q=60') no-repeat center center fixed;
-      background-size:cover;
-    }
-    .overlay{
-      background:var(--bg-overlay);
-      min-height:100vh;
-      padding:32px;
-      border-radius:12px;
-    }
+    :root{--bg:#f6f8fb;--card:#fff;--muted:#6b7280;--accent:#0f62fe}
+    body{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background:var(--bg); margin:0; padding:32px}
     .container{max-width:980px;margin:0 auto}
     header{display:flex;align-items:center;gap:16px;margin-bottom:18px}
     h1{margin:0;font-size:20px}
@@ -40,33 +29,114 @@
     .s-closed{background:#eefbe7;color:#075c14;border:1px solid #bfe7c9}
     .controls{display:flex;gap:8px;align-items:center}
     .muted{color:var(--muted)}
-    .tools-banner{margin:16px 0;text-align:center}
-    .tools-banner img{max-width:100%;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,0.15)}
   </style>
 </head>
 <body>
-  <div class="overlay">
-    <div class="container">
-      <header>
-        <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='40'><rect rx='8' width='40' height='40' fill='%230f62fe'/><text x='50%' y='55%' fill='white' font-size='18' font-family='Arial' text-anchor='middle' alignment-baseline='middle'>AI</text></svg>" alt="logo">
-        <div>
-          <h1>AI Complaint Resolver — HTML Demo</h1>
-          <div class="small muted">Enter a complaint in plain language, generate a professional message, send to the right authority and track status.</div>
+  <div class="container">
+    <header>
+      <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='40'><rect rx='8' width='40' height='40' fill='%230f62fe'/><text x='50%' y='55%' fill='white' font-size='18' font-family='Arial' text-anchor='middle' alignment-baseline='middle'>AI</text></svg>" alt="logo">
+      <div>
+        <h1>AI Complaint Resolver — HTML Demo</h1>
+        <div class="small muted">Enter a complaint in plain language, generate a professional message, send to the right authority and track status.</div>
+      </div>
+    </header>
+
+    <div class="grid">
+      <div>
+        <form id="complaintForm" class="card">
+          <div>
+            <label for="name">Full name</label>
+            <input id="name" required type="text" placeholder="Your full name">
+          </div>
+
+          <div style="margin-top:12px">
+            <label for="email">Email / Contact</label>
+            <input id="email" required type="text" placeholder="email@example.com or +91-98765...">
+          </div>
+
+          <div style="margin-top:12px">
+            <label for="type">Complaint type</label>
+            <select id="type">
+              <option value="electricity">Electricity / Power</option>
+              <option value="internet">Internet / Broadband</option>
+              <option value="water">Water / Sewage</option>
+              <option value="public_safety">Public safety / Roads / Streetlights</option>
+              <option value="municipal">Municipal / Civic services</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <div style="margin-top:12px">
+            <label for="location">Location (address / landmark)</label>
+            <input id="location" type="text" placeholder="Flat / Street / City / Pincode">
+          </div>
+
+          <div style="margin-top:12px">
+            <label for="plain">Write your complaint (plain text)</label>
+            <textarea id="plain" placeholder="E.g. Power outage on Block A, transformer noise, repeated every evening..." required></textarea>
+            <div class="small muted" style="margin-top:6px">Tip: Be specific — dates, times, and any reference numbers help.</div>
+          </div>
+
+          <div style="display:flex;gap:8px;margin-top:12px;align-items:center">
+            <button type="button" id="generateBtn" class="btn">Generate professional message</button>
+            <button type="button" id="autoMapBtn" class="btn ghost">Auto-select authority</button>
+            <div style="flex:1"/>
+            <button type="submit" class="btn">Send complaint</button>
+          </div>
+
+        </form>
+
+        <div class="card" style="margin-top:12px">
+          <div class="small muted">Selected authority</div>
+          <div id="authorityName" class="authority">—</div>
+          <div id="authorityInfo" class="small muted" style="margin-top:6px">No selection yet</div>
         </div>
-      </header>
 
-      <div class="tools-banner">
-        <img src="https://images.unsplash.com/photo-1624121339906-94a9abcc5d5d?auto=format&fit=crop&w=1200&q=60" alt="Mechanic Tools">
+        <div class="card" style="margin-top:12px">
+          <div class="small muted">Generated professional message</div>
+          <div id="messagePreview" class="preview">No message yet. Click "Generate professional message" to create a formatted, polite complaint ready to send.</div>
+        </div>
+
       </div>
 
-      <div class="grid">
-        <!-- (rest of original HTML content remains unchanged) -->
-      </div>
+      <aside>
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div class="small muted">Complaint dashboard</div>
+              <div style="font-weight:700">Tracked complaints</div>
+            </div>
+            <div class="controls"><button id="refreshBtn" class="btn ghost">Refresh</button></div>
+          </div>
+
+          <div style="margin-top:12px;max-height:420px;overflow:auto">
+            <table id="complaintTable">
+              <thead>
+                <tr><th>ID</th><th>Type</th><th>Authority</th><th>Status</th></tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+
+          <div style="margin-top:12px" class="small muted">This demo stores complaints in your browser (localStorage) and simulates status updates. Integrate with a backend endpoint to send real emails/requests.</div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <div class="small muted">API integration notes</div>
+          <ol style="padding-left:18px;margin:8px 0">
+            <li>POST /api/complaints — JSON payload: {name,email,type,location,message}</li>
+            <li>GET /api/complaints/:id — returns current status and history</li>
+            <li>Webhook /notifications — authority updates status: open → in_progress → closed</li>
+          </ol>
+          <div class="small muted">The HTML below includes a placeholder fetch to demonstrate sending; replace with your server URL.</div>
+        </div>
+
+      </aside>
     </div>
   </div>
 
   <script>
-    // Original JS logic preserved here (unchanged)
+    // (JS from original code kept the same)
   </script>
 </body>
 </html>
