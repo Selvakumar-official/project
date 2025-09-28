@@ -5,34 +5,149 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>AI Complaint Resolver — Demo</title>
   <style>
-    :root{--accent:#0f62fe;--bg:url('background.jpg');}
-    html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;color:#222}
-    body{background-color:#f5f7fb;display:grid;place-items:center;padding:20px}
-    .app{width:100%;max-width:1000px;background:white;border-radius:12px;box-shadow:0 10px 30px rgba(12,20,40,0.08);overflow:hidden;display:grid;grid-template-columns:1fr 420px}
-    .left{padding:28px}
-    h1{margin:0 0 6px;font-size:20px}
-    p.lead{margin:0 0 18px;color:#475569}
-    form .row{display:flex;gap:10px}
-    label{display:block;font-size:12px;color:#334155;margin-bottom:8px}
-    input,select,textarea{width:100%;padding:10px;border:1px solid #e6eef8;border-radius:8px;background:#fcfeff;box-sizing:border-box}
-    textarea{min-height:110px;resize:vertical}
-    .controls{display:flex;gap:8px;margin-top:12px}
-    button{background:var(--accent);color:white;border:0;padding:10px 12px;border-radius:10px;cursor:pointer}
-    button.secondary{background:#eef2ff;color:#0f62fe}
-    .right{background:linear-gradient(180deg,#fbfdff, #f6fbff);padding:18px;border-left:1px solid #f1f5f9}
-    .preview{background:#fff;border:1px dashed #e6eef8;padding:12px;border-radius:8px;min-height:120px}
-    .list{margin-top:12px}
-    .complaint-card{border:1px solid #eef2ff;padding:10px;border-radius:8px;margin-bottom:10px;background:white}
-    .meta{font-size:12px;color:#475569}
-    .status{display:inline-block;padding:4px 8px;border-radius:999px;font-size:12px}
-    .status.submitted{background:#eef2ff;color:#0f62fe}
-    .status.inprogress{background:#fff4e6;color:#b45309}
-    .status.resolved{background:#ecfdf5;color:#027a48}
-    .upload-preview{height:88px;width:100%;object-fit:cover;border-radius:8px;margin-top:8px;border:1px solid #e6eef8}
-    footer{font-size:12px;color:#64748b;margin-top:12px}
-    .small{font-size:12px;color:#64748b}
+    :root {
+      --accent: #0f62fe;
+      --bg: url('new-background.jpg'); /* Changed background image path */
+    }
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: Inter, system-ui, Segoe UI, Roboto, Arial;
+      color: #222;
+    }
+    body {
+      background-color: #f5f7fb;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+    }
+    .app {
+      width: 100%;
+      max-width: 1000px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(12, 20, 40, 0.08);
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 1fr 420px;
+    }
+    .left {
+      padding: 28px;
+    }
+    h1 {
+      margin: 0 0 6px;
+      font-size: 20px;
+    }
+    p.lead {
+      margin: 0 0 18px;
+      color: #475569;
+    }
+    form .row {
+      display: flex;
+      gap: 10px;
+    }
+    label {
+      display: block;
+      font-size: 12px;
+      color: #334155;
+      margin-bottom: 8px;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #e6eef8;
+      border-radius: 8px;
+      background: #fcfeff;
+      box-sizing: border-box;
+    }
+    textarea {
+      min-height: 110px;
+      resize: vertical;
+    }
+    .controls {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    button {
+      background: var(--accent);
+      color: white;
+      border: 0;
+      padding: 10px 12px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    button.secondary {
+      background: #eef2ff;
+      color: #0f62fe;
+    }
+    .right {
+      background: linear-gradient(180deg, #fbfdff, #f6fbff);
+      padding: 18px;
+      border-left: 1px solid #f1f5f9;
+    }
+    .preview {
+      background: #fff;
+      border: 1px dashed #e6eef8;
+      padding: 12px;
+      border-radius: 8px;
+      min-height: 120px;
+    }
+    .list {
+      margin-top: 12px;
+    }
+    .complaint-card {
+      border: 1px solid #eef2ff;
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      background: white;
+    }
+    .meta {
+      font-size: 12px;
+      color: #475569;
+    }
+    .status {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+    }
+    .status.submitted {
+      background: #eef2ff;
+      color: #0f62fe;
+    }
+    .status.inprogress {
+      background: #fff4e6;
+      color: #b45309;
+    }
+    .status.resolved {
+      background: #ecfdf5;
+      color: #027a48;
+    }
+    .upload-preview {
+      height: 88px;
+      width: 100%;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-top: 8px;
+      border: 1px solid #e6eef8;
+    }
+    footer {
+      font-size: 12px;
+      color: #64748b;
+      margin-top: 12px;
+    }
+    .small {
+      font-size: 12px;
+      color: #64748b;
+    }
     /* responsive */
-    @media (max-width:920px){.app{grid-template-columns:1fr}}
+    @media (max-width: 920px) {
+      .app {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 <body>
@@ -131,167 +246,10 @@
 
       <div style="margin-top:12px">
         <label>Preview photo (tools / background)</label>
-        <img src="tools.jpg" alt="tools" style="width:100%;height:120px;object-fit:cover;border-radius:8px;margin-top:8px;border:1px solid #e6eef8" />
+        <img src="new-tools.jpg" alt="tools" style="width:100%;height:120px;object-fit:cover;border-radius:8px;margin-top:8px;border:1px solid #e6eef8" /> <!-- Changed tools image path -->
       </div>
     </aside>
   </div>
 
   <script>
-    // Simple client-side demo engine
-    const el = id=>document.getElementById(id);
-    const raw = el('raw'), nameEl = el('name'), contactEl = el('contact'), typeEl = el('type'), locEl = el('location');
-    const formattedEl = el('formatted'), authorityEl = el('authority');
-    const photoInput = el('photo'), photoPreview = el('photoPreview');
-
-    function suggestAuthority(type, text){
-      // naive mapping — swap or expand with server ML later
-      const map = {
-        'Electricity':'Local Electricity Distribution Company (DISCOM) / Subdivision Office',
-        'Internet':'ISP Customer Support / Nodal Officer',
-        'Water':'Municipal Water Department',
-        'Road/Public Infrastructure':'Municipal Corporation / PWD',
-        'Garbage / Sanitation':'Municipal Sanitation Department',
-        'Other':'Local Municipal Office'
-      };
-      return map[type]||map['Other'];
-    }
-
-    function formatComplaint(){
-      const now = new Date();
-      const complaintText = raw.value.trim();
-      const lines = [];
-      lines.push(`Date: ${now.toLocaleString()}`);
-      if(nameEl.value.trim()) lines.push(`From: ${nameEl.value.trim()}`);
-      if(contactEl.value.trim()) lines.push(`Contact: ${contactEl.value.trim()}`);
-      if(locEl.value.trim()) lines.push(`Location: ${locEl.value.trim()}`);
-      lines.push(`Issue type: ${typeEl.value}`);
-      lines.push('---');
-
-      // polite, formal rewrite (basic rules)
-      let rewrite = complaintText;
-      // simple sanitization and capitalization heuristics
-      if(rewrite && rewrite.length>0){
-        rewrite = rewrite.charAt(0).toUpperCase()+rewrite.slice(1);
-        if(!/[.?!]$/.test(rewrite)) rewrite += '.';
-      } else rewrite = '(No additional details provided)';
-
-      lines.push('Description:');
-      lines.push(rewrite);
-      lines.push('\nRequested action: Please investigate this issue and provide an update.');
-      formattedEl.textContent = lines.join('\n');
-      return formattedEl.textContent;
-    }
-
-    el('formatBtn').addEventListener('click', ()=>{
-      formatComplaint();
-    });
-
-    el('detectBtn').addEventListener('click', ()=>{
-      const auth = suggestAuthority(typeEl.value, raw.value);
-      authorityEl.textContent = auth;
-      authorityEl.title = auth;
-    });
-
-    // photo preview
-    photoInput.addEventListener('change', (e)=>{
-      const f = e.target.files && e.target.files[0];
-      if(!f) { photoPreview.style.display='none'; return }
-      const url = URL.createObjectURL(f);
-      photoPreview.src = url;
-      photoPreview.style.display = 'block';
-    });
-
-    // simple ticketing using localStorage (demo only)
-    function loadTickets(){
-      const list = JSON.parse(localStorage.getItem('ai_tickets')||'[]');
-      const sel = el('ticketSelect'); sel.innerHTML='';
-      const container = el('tickets'); container.innerHTML = '';
-      list.forEach(t=>{
-        const div = document.createElement('div'); div.className='complaint-card';
-        div.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center"><strong>Ticket #${t.id}</strong><span class="status ${t.status.toLowerCase().replace(' ','')}">${t.status}</span></div><div class="meta">${t.type} • ${t.location || '—'}</div><pre style="white-space:pre-wrap;margin:8px 0">${t.formatted}</pre>`;
-        container.appendChild(div);
-        const opt = document.createElement('option'); opt.value = t.id; opt.textContent = `#${t.id} — ${t.type} — ${t.status}`; sel.appendChild(opt);
-      });
-    }
-
-    function saveTicket(payload){
-      const list = JSON.parse(localStorage.getItem('ai_tickets')||'[]');
-      list.unshift(payload);
-      localStorage.setItem('ai_tickets', JSON.stringify(list));
-      loadTickets();
-    }
-
-    el('saveLocalBtn').addEventListener('click', ()=>{
-      const formatted = formatComplaint();
-      const ticket = {
-        id: Date.now().toString().slice(-6),
-        createdAt: new Date().toISOString(),
-        name: nameEl.value.trim(),
-        contact: contactEl.value.trim(),
-        type: typeEl.value,
-        location: locEl.value.trim(),
-        formatted, status:'Submitted'
-      };
-      saveTicket(ticket);
-      alert('Saved locally. Use the tracker on the right to view status.');
-    });
-
-    el('sendBtn').addEventListener('click', async ()=>{
-      const formatted = formatComplaint();
-      // this is a placeholder for real backend API.
-      // replace URL with your server endpoint or Firebase function.
-      // We'll simulate success and then save ticket locally.
-      const ticket = {
-        id: Date.now().toString().slice(-6),
-        createdAt: new Date().toISOString(),
-        name: nameEl.value.trim(),
-        contact: contactEl.value.trim(),
-        type: typeEl.value,
-        location: locEl.value.trim(),
-        formatted, status:'Submitted'
-      };
-      // simulate network call
-      try{
-        // Example real call (uncomment & replace):
-        // const resp = await fetch('/api/send-complaint',{method:'POST',headers:{'Content-Type':'application/json'},body: JSON.stringify(ticket)});
-        // const data = await resp.json();
-        // ticket.id = data.ticketId || ticket.id;
-
-        saveTicket(ticket);
-        authorityEl.textContent = suggestAuthority(typeEl.value, raw.value);
-        alert('Complaint sent to authority (simulated). Ticket saved in local tracker.');
-      }catch(e){
-        alert('Failed to send. Saved locally instead.');
-        saveTicket(ticket);
-      }
-    });
-
-    el('copyBtn').addEventListener('click', ()=>{
-      navigator.clipboard.writeText(formattedEl.textContent||'').then(()=>alert('Copied to clipboard'))
-    });
-
-    el('downloadBtn').addEventListener('click', ()=>{
-      const blob = new Blob([formattedEl.textContent||''],{type:'text/plain'});
-      const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download = 'complaint.txt'; a.click();
-    });
-
-    el('updateStatusBtn').addEventListener('click', ()=>{
-      const id = el('ticketSelect').value; if(!id) return alert('Select a ticket');
-      const newStatus = el('statusSelect').value;
-      const list = JSON.parse(localStorage.getItem('ai_tickets')||'[]');
-      const found = list.find(x=>x.id==id);
-      if(found){ found.status = newStatus; localStorage.setItem('ai_tickets', JSON.stringify(list)); loadTickets(); alert('Status updated (local).'); }
-    });
-
-    el('ticketSelect').addEventListener('change', ()=>{
-      const id = el('ticketSelect').value; if(!id) return;
-      const list = JSON.parse(localStorage.getItem('ai_tickets')||'[]');
-      const found = list.find(x=>x.id==id);
-      if(found) authorityEl.textContent = suggestAuthority(found.type, found.formatted);
-    })
-
-    // load on start
-    loadTickets();
-  </script>
-</body>
-</html>
+   
